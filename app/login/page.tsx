@@ -29,8 +29,7 @@ export default function LoginPage() {
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password })
         if (error) throw error
-        router.push('/select')
-        router.refresh()
+        window.location.href = '/select'
       }
     } catch (err: any) {
       setMessage(err.message || 'エラーが発生しました')
