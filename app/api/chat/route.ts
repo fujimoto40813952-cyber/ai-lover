@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { openai } from '@/lib/openai'
+import { generateSpeech } from '@/lib/tts'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
@@ -13,6 +14,7 @@ export async function POST(req: NextRequest) {
       avatarName,
       personality,
       voiceId,
+      nijivoiceActorId,
       messageHistory,
     } = await req.json()
 
@@ -96,21 +98,17 @@ ${memoriesContext}`
       content: reply,
     }).select().single()
 
-    // 6. Generate TTS audio
+    // 6. Generate TTS audio（にじボイス優先・OpenAIフォールバック）
     let audioUrl: string | null = null
     try {
-      const ttsRes = await openai.audio.speech.create({
-        model: 'tts-1',
-        voice: (voiceId || 'nova') as any,
-        input: reply,
-        speed: 1.0,
-      })
-      const audioBuffer = Buffer.from(await ttsRes.arrayBuffer())
+      const tts = await generateSpeech(reply, { voiceId, nijivoiceActorId })
+      if (!tts) throw new Error('TTS generation failed')
+      const audioBuffer = tts.buffer
       // Store audio in Supabase Storage
-      const audioPath = `${userId}/${conversationId}/${savedMsg?.id || Date.now()}.mp3`
+      const audioPath = `${userId}/${conversationId}/${savedMsg?.id || Date.now()}.${tts.extension}`
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('audio')
-        .upload(audioPath, audioBuffer, { contentType: 'audio/mpeg', upsert: true })
+        .upload(audioPath, audioBuffer, { contentType: tts.contentType, upsert: true })
 
       if (!uploadError) {
         const { data: urlData } = supabase.storage.from('audio').getPublicUrl(audioPath)
