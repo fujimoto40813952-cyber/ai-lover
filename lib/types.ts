@@ -6,6 +6,7 @@ export interface Avatar {
   description: string
   image_url: string | null
   voice_id: string
+  nijivoice_actor_id: string | null
   created_at: string
 }
 
