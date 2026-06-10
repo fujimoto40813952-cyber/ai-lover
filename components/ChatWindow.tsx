@@ -63,6 +63,7 @@ export default function ChatWindow({ avatar, conversation, initialMessages, user
           avatarName: avatar.name,
           personality: avatar.personality,
           voiceId: avatar.voice_id,
+          nijivoiceActorId: avatar.nijivoice_actor_id || null,
           messageHistory: messages.slice(-10).map(m => ({ role: m.role, content: m.content })),
         }),
       })
