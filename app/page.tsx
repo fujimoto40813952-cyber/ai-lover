@@ -27,7 +27,7 @@ export default function Home() {
           記憶を持ち、あなたを深く理解するAIコンパニオン
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center"></div>
           <Link
             href="/login"
             className="px-8 py-4 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 text-white font-semibold text-lg hover:opacity-90 transition-all hover:scale-105 shadow-lg shadow-pink-500/25"
