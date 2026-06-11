@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
       avatarName,
       personality,
       voiceId,
-      nijivoiceActorId,
+      ttsVoiceId,
       messageHistory,
       workMode,
       workMinutes,
@@ -118,7 +118,7 @@ ${memoriesContext}`
     // 6. Generate TTS audio（にじボイス優先・OpenAIフォールバック）
     let audioUrl: string | null = null
     try {
-      const tts = await generateSpeech(reply, { voiceId, nijivoiceActorId })
+      const tts = await generateSpeech(reply, { voiceId, ttsVoiceId })
       if (!tts) throw new Error('TTS generation failed')
       const audioBuffer = tts.buffer
       // Store audio in Supabase Storage
