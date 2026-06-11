@@ -26,6 +26,11 @@ export default function ChatWindow({ avatar, conversation, initialMessages, user
   const [messages, setMessages] = useState<Message[]>(initialMessages)
   const [isLoading, setIsLoading] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
+  const [workSession, setWorkSession] = useState<{ minutes: number; endsAt: number } | null>(null)
+  const [workRemaining, setWorkRemaining] = useState(0)
+  const [showWorkMenu, setShowWorkMenu] = useState(false)
+  const workTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const nextCheerRef = useRef<number>(0)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const router = useRouter()
@@ -102,6 +107,84 @@ export default function ChatWindow({ avatar, conversation, initialMessages, user
     }
   }
 
+  const requestWorkMessage = async (mode: 'start' | 'cheer' | 'end', minutes: number, remaining: number) => {
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: '',
+          workMode: mode,
+          workMinutes: minutes,
+          workRemaining: remaining,
+          avatarId: avatar.id,
+          conversationId: conversation.id,
+          userId,
+          avatarName: avatar.name,
+          personality: avatar.personality,
+          voiceId: avatar.voice_id,
+          nijivoiceActorId: avatar.nijivoice_actor_id || null,
+          messageHistory: messages.slice(-4).map(m => ({ role: m.role, content: m.content })),
+        }),
+      })
+      if (!response.ok) return
+      const data = await response.json()
+      setMessages(prev => [...prev, {
+        id: data.messageId || `work-${mode}-${Date.now()}`,
+        conversation_id: conversation.id,
+        role: 'assistant',
+        content: data.reply,
+        audio_url: data.audioUrl || null,
+        created_at: new Date().toISOString(),
+      }])
+      if (data.audioUrl) playAudio(data.audioUrl)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const startWork = (minutes: number) => {
+    if (workSession) return
+    const endsAt = Date.now() + minutes * 60_000
+    setWorkSession({ minutes, endsAt })
+    setWorkRemaining(minutes * 60)
+    setShowWorkMenu(false)
+    nextCheerRef.current = Date.now() + 10 * 60_000 // 10分ごとに応援
+    requestWorkMessage('start', minutes, minutes)
+    workTimerRef.current = setInterval(() => {
+      const remainMs = endsAt - Date.now()
+      if (remainMs <= 0) {
+        if (workTimerRef.current) clearInterval(workTimerRef.current)
+        workTimerRef.current = null
+        setWorkSession(null)
+        setWorkRemaining(0)
+        requestWorkMessage('end', minutes, 0)
+        return
+      }
+      setWorkRemaining(Math.ceil(remainMs / 1000))
+      // 残り2分未満では途中応援しない
+      if (Date.now() >= nextCheerRef.current && remainMs > 2 * 60_000) {
+        nextCheerRef.current = Date.now() + 10 * 60_000
+        requestWorkMessage('cheer', minutes, Math.ceil(remainMs / 60_000))
+      }
+    }, 1000)
+  }
+
+  const cancelWork = () => {
+    if (workTimerRef.current) clearInterval(workTimerRef.current)
+    workTimerRef.current = null
+    setWorkSession(null)
+    setWorkRemaining(0)
+  }
+
+  useEffect(() => {
+    return () => {
+      if (workTimerRef.current) clearInterval(workTimerRef.current)
+    }
+  }, [])
+
+  const formatTime = (sec: number) => `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`
+
   const playAudio = (url: string) => {
     if (audioRef.current) {
       audioRef.current.pause()
@@ -131,9 +214,40 @@ export default function ChatWindow({ avatar, conversation, initialMessages, user
           <span className="font-semibold text-white">{avatar.name}</span>
           {isPlaying && <span className="text-xs text-pink-400 animate-pulse">♪ 話し中</span>}
         </div>
-        <button onClick={handleSignOut} className="text-white/30 hover:text-white/70 text-xs transition-colors">
-          ログアウト
-        </button>
+        <div className="flex items-center gap-3">
+          {workSession ? (
+            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-pink-500/15 border border-pink-400/30">
+              <span className="text-xs text-pink-300">🍅 {formatTime(workRemaining)}</span>
+              <button onClick={cancelWork} className="text-white/40 hover:text-white/80 text-xs">✕</button>
+            </div>
+          ) : (
+            <div className="relative">
+              <button
+                onClick={() => setShowWorkMenu(v => !v)}
+                className="px-3 py-1 rounded-full text-xs text-pink-300 bg-pink-500/10 border border-pink-400/20 hover:bg-pink-500/20 transition-colors"
+              >
+                🍅 一緒に作業
+              </button>
+              {showWorkMenu && (
+                <div className="absolute right-0 top-9 z-20 bg-[#1a0a2e] border border-white/10 rounded-xl shadow-xl p-2 w-44">
+                  <p className="text-[10px] text-white/40 px-2 pb-1">作業時間を選んでね</p>
+                  {[25, 50].map(m => (
+                    <button
+                      key={m}
+                      onClick={() => startWork(m)}
+                      className="w-full text-left px-3 py-2 rounded-lg text-sm text-white/80 hover:bg-white/10 transition-colors"
+                    >
+                      {m}分 集中する
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+          <button onClick={handleSignOut} className="text-white/30 hover:text-white/70 text-xs transition-colors">
+            ログアウト
+          </button>
+        </div>
       </header>
 
       <div className="flex flex-1 overflow-hidden">
