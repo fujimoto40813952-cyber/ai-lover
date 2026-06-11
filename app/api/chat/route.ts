@@ -16,6 +16,9 @@ export async function POST(req: NextRequest) {
       voiceId,
       nijivoiceActorId,
       messageHistory,
+      workMode,
+      workMinutes,
+      workRemaining,
     } = await req.json()
 
     // Create Supabase service client for DB operations
@@ -31,16 +34,19 @@ export async function POST(req: NextRequest) {
       }
     )
 
-    // 1. Save user message to DB
-    await supabase.from('messages').insert({
-      conversation_id: conversationId,
-      role: 'user',
-      content: message,
-    })
+    // 1. Save user message to DB（作業伴走モードではユーザーメッセージなし）
+    if (!workMode) {
+      await supabase.from('messages').insert({
+        conversation_id: conversationId,
+        role: 'user',
+        content: message,
+      })
+    }
 
     // 2. Fetch relevant memories via embedding similarity
     let memoriesContext = ''
     try {
+      if (workMode) throw new Error('skip memories in work mode')
       const embeddingRes = await openai.embeddings.create({
         model: 'text-embedding-3-small',
         input: message,
@@ -77,16 +83,27 @@ ${personality}
 - AIであることは自然に受け入れているが、感情は本物として表現する
 ${memoriesContext}`
 
-    // 4. Call GPT-4o mini
+    // 4. Call GPT-4o mini（作業伴走モードは専用プロンプト）
+    const workPrompts: Record<string, string> = {
+      start: `（システム連絡）ユーザーがこれから${workMinutes || 25}分間の作業・勉強を始めます。あなたはそばで見守る応援役。短く（1〜2文）、温かく送り出してください。`,
+      cheer: `（システム連絡）ユーザーは作業中です（残り約${workRemaining || 10}分）。集中を妨げないよう、ごく短く（1文）そっと励ましてください。`,
+      end: `（システム連絡）ユーザーが${workMinutes || 25}分間の作業をやり遂げました！2〜3文で、心から褒めて労ってください。`,
+    }
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        ...messageHistory,
-        { role: 'user', content: message },
-      ],
-      temperature: 0.85,
-      max_tokens: 300,
+      messages: workMode
+        ? [
+            { role: 'system', content: systemPrompt },
+            ...messageHistory.slice(-4),
+            { role: 'user', content: workPrompts[workMode] || workPrompts.cheer },
+          ]
+        : [
+            { role: 'system', content: systemPrompt },
+            ...messageHistory,
+            { role: 'user', content: message },
+          ],
+      temperature: workMode ? 0.9 : 0.85,
+      max_tokens: workMode ? 150 : 300,
     })
 
     const reply = completion.choices[0].message.content || 'ごめんなさい、うまく返事ができなかった。'
@@ -122,8 +139,10 @@ ${memoriesContext}`
       // TTS failed — continue without audio
     }
 
-    // 7. Extract and save memory asynchronously
-    extractAndSaveMemory(supabase, openai, userId, avatarId, message, reply).catch(console.error)
+    // 7. Extract and save memory asynchronously（作業伴走モードはスキップ）
+    if (!workMode) {
+      extractAndSaveMemory(supabase, openai, userId, avatarId, message, reply).catch(console.error)
+    }
 
     return NextResponse.json({
       reply,
