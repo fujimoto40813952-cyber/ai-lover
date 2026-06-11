@@ -68,7 +68,7 @@ export default function ChatWindow({ avatar, conversation, initialMessages, user
           avatarName: avatar.name,
           personality: avatar.personality,
           voiceId: avatar.voice_id,
-          nijivoiceActorId: avatar.nijivoice_actor_id || null,
+          ttsVoiceId: avatar.tts_voice_id || null,
           messageHistory: messages.slice(-10).map(m => ({ role: m.role, content: m.content })),
         }),
       })
@@ -123,7 +123,7 @@ export default function ChatWindow({ avatar, conversation, initialMessages, user
           avatarName: avatar.name,
           personality: avatar.personality,
           voiceId: avatar.voice_id,
-          nijivoiceActorId: avatar.nijivoice_actor_id || null,
+          ttsVoiceId: avatar.tts_voice_id || null,
           messageHistory: messages.slice(-4).map(m => ({ role: m.role, content: m.content })),
         }),
       })
