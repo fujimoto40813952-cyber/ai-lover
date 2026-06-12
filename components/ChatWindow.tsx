@@ -31,6 +31,7 @@ export default function ChatWindow({ avatar, conversation, initialMessages, user
   const [showWorkMenu, setShowWorkMenu] = useState(false)
   const workTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const nextCheerRef = useRef<number>(0)
+  const anniversaryCheckedRef = useRef(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const router = useRouter()
@@ -201,6 +202,47 @@ export default function ChatWindow({ avatar, conversation, initialMessages, user
     audio.onerror = () => setIsPlaying(false)
     audio.play().catch(console.error)
   }
+
+  // 起動時：今日が記念日ならAIがサプライズメッセージで出迎える
+  useEffect(() => {
+    if (anniversaryCheckedRef.current) return
+    anniversaryCheckedRef.current = true
+    ;(async () => {
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            anniversaryCheck: true,
+            avatarId: avatar.id,
+            conversationId: conversation.id,
+            userId,
+            avatarName: avatar.name,
+            personality: avatar.personality,
+            voiceId: avatar.voice_id,
+            ttsVoiceId: avatar.tts_voice_id || null,
+            messageHistory: messages.slice(-4).map(m => ({ role: m.role, content: m.content })),
+          }),
+        })
+        if (!res.ok) return
+        const data = await res.json()
+        if (!data.reply) return
+        setMessages(prev => [...prev, {
+          id: data.messageId || `anni-${Date.now()}`,
+          conversation_id: conversation.id,
+          role: 'assistant',
+          content: data.reply,
+          audio_url: data.audioUrl || null,
+          image_url: null,
+          created_at: new Date().toISOString(),
+        }])
+        if (data.audioUrl) playAudio(data.audioUrl)
+      } catch (e) {
+        console.error(e)
+      }
+    })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
