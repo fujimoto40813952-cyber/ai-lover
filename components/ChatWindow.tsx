@@ -41,16 +41,17 @@ export default function ChatWindow({ avatar, conversation, initialMessages, user
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  const sendMessage = async (content: string) => {
-    if (!content.trim() || isLoading) return
+  const sendMessage = async (content: string, imageData?: string) => {
+    if ((!content.trim() && !imageData) || isLoading) return
 
-    // Add user message to UI immediately
+    // Add user message to UI immediately（写真はローカルのdataURLでプレビュー表示）
     const userMsg: Message = {
       id: `temp-${Date.now()}`,
       conversation_id: conversation.id,
       role: 'user',
       content,
       audio_url: null,
+      image_url: imageData || null,
       created_at: new Date().toISOString(),
     }
     setMessages(prev => [...prev, userMsg])
@@ -62,6 +63,7 @@ export default function ChatWindow({ avatar, conversation, initialMessages, user
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: content,
+          imageData: imageData || null,
           avatarId: avatar.id,
           conversationId: conversation.id,
           userId,
@@ -84,6 +86,7 @@ export default function ChatWindow({ avatar, conversation, initialMessages, user
         role: 'assistant',
         content: data.reply,
         audio_url: data.audioUrl || null,
+        image_url: null,
         created_at: new Date().toISOString(),
       }
       setMessages(prev => [...prev, assistantMsg])
@@ -100,6 +103,7 @@ export default function ChatWindow({ avatar, conversation, initialMessages, user
         role: 'assistant',
         content: 'ごめんなさい、少し調子が悪いみたい。もう一度話しかけてくれる？',
         audio_url: null,
+        image_url: null,
         created_at: new Date().toISOString(),
       }])
     } finally {
@@ -135,6 +139,7 @@ export default function ChatWindow({ avatar, conversation, initialMessages, user
         role: 'assistant',
         content: data.reply,
         audio_url: data.audioUrl || null,
+        image_url: null,
         created_at: new Date().toISOString(),
       }])
       if (data.audioUrl) playAudio(data.audioUrl)
