@@ -16,6 +16,7 @@ export interface Message {
   role: 'user' | 'assistant'
   content: string
   audio_url: string | null
+  image_url: string | null
   created_at: string
 }
 
