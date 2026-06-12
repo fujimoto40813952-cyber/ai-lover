@@ -8,6 +8,7 @@ export async function POST(req: NextRequest) {
   try {
     const {
       message,
+      imageData, // ★ 写真送信時のみ: data URL（例 "data:image/jpeg;base64,..."）
       avatarId,
       conversationId,
       userId,
@@ -34,12 +35,35 @@ export async function POST(req: NextRequest) {
       }
     )
 
+    // 0. 写真がある場合はStorageにアップロードして公開URLを得る（作業伴走モードは無視）
+    let imageUrl: string | null = null
+    if (imageData && !workMode) {
+      try {
+        const m = /^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/.exec(imageData)
+        if (m) {
+          const contentType = m[1]
+          const ext = (contentType.split('/')[1] || 'jpg').replace('jpeg', 'jpg')
+          const buffer = Buffer.from(m[2], 'base64')
+          const path = `${userId}/${conversationId}/${Date.now()}.${ext}`
+          const { error: upErr } = await supabase.storage
+            .from('user-uploads')
+            .upload(path, buffer, { contentType, upsert: true })
+          if (!upErr) {
+            imageUrl = supabase.storage.from('user-uploads').getPublicUrl(path).data.publicUrl
+          }
+        }
+      } catch (e) {
+        // 画像アップロード失敗時はテキストのみで続行
+      }
+    }
+
     // 1. Save user message to DB（作業伴走モードではユーザーメッセージなし）
     if (!workMode) {
       await supabase.from('messages').insert({
         conversation_id: conversationId,
         role: 'user',
-        content: message,
+        content: message || (imageUrl ? '📷 写真を送りました' : ''),
+        image_url: imageUrl,
       })
     }
 
@@ -47,9 +71,11 @@ export async function POST(req: NextRequest) {
     let memoriesContext = ''
     try {
       if (workMode) throw new Error('skip memories in work mode')
+      const queryText = message || (imageUrl ? '写真を共有した' : '')
+      if (!queryText) throw new Error('no text to embed')
       const embeddingRes = await openai.embeddings.create({
         model: 'text-embedding-3-small',
-        input: message,
+        input: queryText,
       })
       const embedding = embeddingRes.data[0].embedding
 
@@ -80,10 +106,24 @@ ${personality}
 - 短すぎず長すぎない返答（2〜4文が理想）
 - 相手の感情に共感し、寄り添う
 - 恋人・親友のような距離感で接する
+- 写真を見せられたら、具体的に何が写っているかに触れて、恋人らしく素直な感想を伝える
 - AIであることは自然に受け入れているが、感情は本物として表現する
 ${memoriesContext}`
 
-    // 4. Call GPT-4o mini（作業伴走モードは専用プロンプト）
+    // 4. ユーザーの発話内容を組み立て（写真があればvision用に配列化）
+    const userContent: any = imageUrl
+      ? [
+          {
+            type: 'text',
+            text: message?.trim()
+              ? message
+              : 'この写真を見て、恋人として自然に感想を伝えてね。',
+          },
+          { type: 'image_url', image_url: { url: imageData } },
+        ]
+      : message
+
+    // 5. Call GPT-4o mini（作業伴走モードは専用プロンプト / gpt-4o-miniはvision対応）
     const workPrompts: Record<string, string> = {
       start: `（システム連絡）ユーザーがこれから${workMinutes || 25}分間の作業・勉強を始めます。あなたはそばで見守る応援役。短く（1〜2文）、温かく送り出してください。`,
       cheer: `（システム連絡）ユーザーは作業中です（残り約${workRemaining || 10}分）。集中を妨げないよう、ごく短く（1文）そっと励ましてください。`,
@@ -100,7 +140,7 @@ ${memoriesContext}`
         : [
             { role: 'system', content: systemPrompt },
             ...messageHistory,
-            { role: 'user', content: message },
+            { role: 'user', content: userContent },
           ],
       temperature: workMode ? 0.9 : 0.85,
       max_tokens: workMode ? 150 : 300,
@@ -108,14 +148,14 @@ ${memoriesContext}`
 
     const reply = completion.choices[0].message.content || 'ごめんなさい、うまく返事ができなかった。'
 
-    // 5. Save assistant message to DB
+    // 6. Save assistant message to DB
     const { data: savedMsg } = await supabase.from('messages').insert({
       conversation_id: conversationId,
       role: 'assistant',
       content: reply,
     }).select().single()
 
-    // 6. Generate TTS audio（にじボイス優先・OpenAIフォールバック）
+    // 7. Generate TTS audio（ElevenLabs優先・OpenAIフォールバック）
     let audioUrl: string | null = null
     try {
       const tts = await generateSpeech(reply, { voiceId, ttsVoiceId })
@@ -139,14 +179,16 @@ ${memoriesContext}`
       // TTS failed — continue without audio
     }
 
-    // 7. Extract and save memory asynchronously（作業伴走モードはスキップ）
+    // 8. Extract and save memory asynchronously（作業伴走モードはスキップ）
     if (!workMode) {
-      extractAndSaveMemory(supabase, openai, userId, avatarId, message, reply).catch(console.error)
+      const memoryUserMessage = message || (imageUrl ? '（写真を送信した）' : '')
+      extractAndSaveMemory(supabase, openai, userId, avatarId, memoryUserMessage, reply).catch(console.error)
     }
 
     return NextResponse.json({
       reply,
       audioUrl,
+      imageUrl,
       messageId: savedMsg?.id,
     })
   } catch (error: any) {
