@@ -24,8 +24,13 @@ export default function AvatarGrid({ avatars }: { avatars: Avatar[] }) {
             className="group relative rounded-3xl overflow-hidden border border-white/10 hover:border-pink-400/50 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-pink-500/20"
           >
             {/* Avatar visual */}
-            <div className={`aspect-square bg-gradient-to-br ${style.gradient} flex items-center justify-center`}>
-              <span className="text-6xl animate-breathe">{style.emoji}</span>
+            <div className={`aspect-square bg-gradient-to-br ${style.gradient} flex items-center justify-center overflow-hidden`}>
+              {avatar.image_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={avatar.image_url} alt={avatar.name} className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-6xl animate-breathe">{style.emoji}</span>
+              )}
             </div>
 
             {/* Info */}
