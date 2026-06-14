@@ -5,10 +5,12 @@ import { Message } from '@/lib/types'
 interface Props {
   message: Message
   avatarStyle: { emoji: string; gradient: string }
+  avatarImage?: string | null
+  avatarName?: string
   onPlayAudio?: () => void
 }
 
-export default function MessageBubble({ message, avatarStyle, onPlayAudio }: Props) {
+export default function MessageBubble({ message, avatarStyle, avatarImage, avatarName, onPlayAudio }: Props) {
   const isUser = message.role === 'user'
   // 写真のみのときの定型キャプションは吹き出しに出さない
   const isPhotoPlaceholder = message.content === '📷 写真を送りました'
@@ -18,8 +20,13 @@ export default function MessageBubble({ message, avatarStyle, onPlayAudio }: Pro
     <div className={`flex items-end gap-2 message-enter ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
       {/* Avatar icon */}
       {!isUser && (
-        <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${avatarStyle.gradient} flex items-center justify-center text-sm flex-shrink-0`}>
-          {avatarStyle.emoji}
+        <div className={`w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br ${avatarStyle.gradient} flex items-center justify-center text-sm flex-shrink-0`}>
+          {avatarImage ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={avatarImage} alt={avatarName || ''} className="w-full h-full object-cover" />
+          ) : (
+            avatarStyle.emoji
+          )}
         </div>
       )}
 

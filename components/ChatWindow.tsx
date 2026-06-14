@@ -257,7 +257,14 @@ export default function ChatWindow({ avatar, conversation, initialMessages, user
           ← 戻る
         </button>
         <div className="flex items-center gap-2">
-          <span className="text-lg">{style.emoji}</span>
+          <div className={`w-9 h-9 rounded-full overflow-hidden bg-gradient-to-br ${style.gradient} flex items-center justify-center text-base flex-shrink-0 ${isPlaying ? 'ring-2 ring-pink-400/70' : ''}`}>
+            {avatar.image_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={avatar.image_url} alt={avatar.name} className="w-full h-full object-cover" />
+            ) : (
+              style.emoji
+            )}
+          </div>
           <span className="font-semibold text-white">{avatar.name}</span>
           {isPlaying && <span className="text-xs text-pink-400 animate-pulse">♪ 話し中</span>}
         </div>
@@ -320,12 +327,17 @@ export default function ChatWindow({ avatar, conversation, initialMessages, user
               </div>
             )}
             {messages.map((msg) => (
-              <MessageBubble key={msg.id} message={msg} avatarStyle={style} onPlayAudio={msg.audio_url ? () => playAudio(msg.audio_url!) : undefined} />
+              <MessageBubble key={msg.id} message={msg} avatarStyle={style} avatarImage={avatar.image_url} avatarName={avatar.name} onPlayAudio={msg.audio_url ? () => playAudio(msg.audio_url!) : undefined} />
             ))}
             {isLoading && (
               <div className="flex items-end gap-2">
-                <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${style.gradient} flex items-center justify-center text-sm flex-shrink-0`}>
-                  {style.emoji}
+                <div className={`w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br ${style.gradient} flex items-center justify-center text-sm flex-shrink-0`}>
+                  {avatar.image_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={avatar.image_url} alt={avatar.name} className="w-full h-full object-cover" />
+                  ) : (
+                    style.emoji
+                  )}
                 </div>
                 <div className="bg-white/10 rounded-2xl rounded-bl-none px-4 py-3">
                   <div className="flex gap-1">

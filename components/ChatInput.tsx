@@ -90,7 +90,7 @@ export default function ChatInput({ onSend, disabled }: Props) {
   }
 
   return (
-    <div className="border-t border-white/10 p-4 bg-black/20 backdrop-blur-sm">
+    <div className="border-t border-white/10 p-4 bg-black/20 backdrop-blur-sm" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
       {/* 画像プレビュー */}
       {(imageData || imgLoading) && (
         <div className="max-w-3xl mx-auto mb-2 flex items-center gap-2">
@@ -144,7 +144,7 @@ export default function ChatInput({ onSend, disabled }: Props) {
             disabled={disabled}
             placeholder="メッセージを入力... (Enter で送信)"
             rows={1}
-            className="w-full px-4 py-3 rounded-2xl bg-white/10 border border-white/20 text-white placeholder-white/30 focus:outline-none focus:border-pink-400/60 transition-colors resize-none text-sm leading-relaxed disabled:opacity-50"
+            className="w-full px-4 py-3 rounded-2xl bg-white/10 border border-white/20 text-white placeholder-white/30 focus:outline-none focus:border-pink-400/60 transition-colors resize-none text-base leading-relaxed disabled:opacity-50"
           />
         </div>
         <button

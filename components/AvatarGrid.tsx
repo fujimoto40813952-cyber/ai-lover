@@ -21,7 +21,7 @@ export default function AvatarGrid({ avatars }: { avatars: Avatar[] }) {
           <button
             key={avatar.id}
             onClick={() => router.push(`/chat/${avatar.id}`)}
-            className="group relative rounded-3xl overflow-hidden border border-white/10 hover:border-pink-400/50 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-pink-500/20"
+            className="group relative rounded-3xl overflow-hidden border border-white/10 hover:border-pink-400/50 transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-2xl hover:shadow-pink-500/20"
           >
             {/* Avatar visual */}
             <div className={`aspect-square bg-gradient-to-br ${style.gradient} flex items-center justify-center overflow-hidden`}>
@@ -42,6 +42,7 @@ export default function AvatarGrid({ avatars }: { avatars: Avatar[] }) {
                 </span>
               </div>
               <p className="text-xs text-white/50 line-clamp-2">{avatar.description}</p>
+              <span className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-pink-300 group-hover:text-pink-200">話す →</span>
             </div>
 
             {/* Hover overlay */}
