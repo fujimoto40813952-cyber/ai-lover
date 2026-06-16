@@ -8,17 +8,17 @@ interface Props {
 
 export default function AvatarDisplay({ avatar, isPlaying, style }: Props) {
   return (
-    <div className="relative">
-      {/* Outer glow ring */}
-      <div className={`absolute inset-0 rounded-full bg-gradient-to-br ${style.gradient} blur-xl opacity-30 ${isPlaying ? 'animate-pulse' : ''}`} />
+    <div className="relative w-full flex flex-col items-center">
+      {/* Outer glow */}
+      <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${style.gradient} blur-2xl opacity-30 ${isPlaying ? 'animate-pulse' : ''}`} />
 
-      {/* Avatar circle */}
-      <div className={`relative w-40 h-40 rounded-full overflow-hidden bg-gradient-to-br ${style.gradient} flex items-center justify-center avatar-glow ${isPlaying ? 'animate-pulse-soft' : 'animate-breathe'}`}>
+      {/* Avatar portrait (9:16) */}
+      <div className={`relative w-full max-w-[220px] aspect-[9/16] rounded-3xl overflow-hidden bg-gradient-to-br ${style.gradient} flex items-center justify-center avatar-glow ${isPlaying ? 'animate-pulse-soft' : 'animate-breathe'}`}>
         {avatar.image_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={avatar.image_url} alt={avatar.name} className="w-full h-full object-cover" />
         ) : (
-          <span className="text-6xl">{style.emoji}</span>
+          <span className="text-7xl">{style.emoji}</span>
         )}
       </div>
 

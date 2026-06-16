@@ -260,7 +260,7 @@ export default function ChatWindow({ avatar, conversation, initialMessages, user
           <div className={`w-9 h-9 rounded-full overflow-hidden bg-gradient-to-br ${style.gradient} flex items-center justify-center text-base flex-shrink-0 ${isPlaying ? 'ring-2 ring-pink-400/70' : ''}`}>
             {avatar.image_url ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={avatar.image_url} alt={avatar.name} className="w-full h-full object-cover" />
+              <img src={avatar.image_url} alt={avatar.name} className="w-full h-full object-cover object-top" />
             ) : (
               style.emoji
             )}
@@ -306,7 +306,7 @@ export default function ChatWindow({ avatar, conversation, initialMessages, user
 
       <div className="flex flex-1 overflow-hidden">
         {/* Avatar panel (hidden on mobile, visible on md+) */}
-        <aside className="hidden md:flex w-64 flex-col items-center justify-center p-6 border-r border-white/5">
+        <aside className="hidden md:flex w-72 flex-col items-center justify-center p-6 border-r border-white/5">
           <AvatarDisplay avatar={avatar} isPlaying={isPlaying} style={style} />
           <p className="text-xs text-white/30 mt-4 text-center leading-relaxed">{avatar.description}</p>
         </aside>
@@ -334,7 +334,7 @@ export default function ChatWindow({ avatar, conversation, initialMessages, user
                 <div className={`w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br ${style.gradient} flex items-center justify-center text-sm flex-shrink-0`}>
                   {avatar.image_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={avatar.image_url} alt={avatar.name} className="w-full h-full object-cover" />
+                    <img src={avatar.image_url} alt={avatar.name} className="w-full h-full object-cover object-top" />
                   ) : (
                     style.emoji
                   )}

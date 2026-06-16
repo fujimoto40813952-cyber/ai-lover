@@ -23,7 +23,7 @@ export default function MessageBubble({ message, avatarStyle, avatarImage, avata
         <div className={`w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br ${avatarStyle.gradient} flex items-center justify-center text-sm flex-shrink-0`}>
           {avatarImage ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={avatarImage} alt={avatarName || ''} className="w-full h-full object-cover" />
+            <img src={avatarImage} alt={avatarName || ''} className="w-full h-full object-cover object-top" />
           ) : (
             avatarStyle.emoji
           )}
