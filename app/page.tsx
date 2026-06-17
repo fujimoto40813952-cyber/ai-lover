@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Logo from '@/components/Logo'
 import InstallPrompt from '@/components/InstallPrompt'
+import Footer from '@/components/Footer'
 
 const FEATURES = [
   {
@@ -89,6 +90,7 @@ export default function Home() {
         </div>
       </div>
 
+      <Footer />
       <InstallPrompt />
     </main>
   )
