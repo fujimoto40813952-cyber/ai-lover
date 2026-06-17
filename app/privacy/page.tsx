@@ -10,7 +10,7 @@ export default function PrivacyPage() {
   return (
     <LegalShell title="プライバシーポリシー" updatedAt="2026年6月17日">
       <p>
-        【要記入：運営事業者名】（以下「当社」）は、AIコンパニオンサービス「AI Lover」（以下「本サービス」）における利用者（以下「ユーザー」）の個人情報の取扱いについて、以下のとおりプライバシーポリシー（以下「本ポリシー」）を定めます。
+        AI Lover 事務局（以下「当社」）は、AIコンパニオンサービス「AI Lover」（以下「本サービス」）における利用者（以下「ユーザー」）の個人情報の取扱いについて、以下のとおりプライバシーポリシー（以下「本ポリシー」）を定めます。
       </p>
 
       <h2 className="text-xl font-semibold text-white">1. 取得する情報</h2>
@@ -55,7 +55,7 @@ export default function PrivacyPage() {
       <p>本ポリシーは、必要に応じて改定されることがあります。重要な変更がある場合は本サービス上で告知します。</p>
 
       <h2 className="text-xl font-semibold text-white">10. お問い合わせ窓口</h2>
-      <p>個人情報の取扱いに関するお問い合わせは【要記入：連絡先メールアドレス】までご連絡ください。</p>
+      <p>個人情報の取扱いに関するお問い合わせは、LINE公式アカウント（【要記入：LINE URL】）にて受け付けています。</p>
     </LegalShell>
   )
 }
