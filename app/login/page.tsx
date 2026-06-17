@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Logo from '@/components/Logo'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -44,7 +45,7 @@ export default function LoginPage() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(236,72,153,0.1),transparent_70%)]" />
       <div className="relative z-10 w-full max-w-md">
         <div className="text-center mb-8">
-          <Link href="/"><span className="text-4xl">💝</span></Link>
+          <Link href="/" className="inline-flex justify-center"><Logo size={48} /></Link>
           <h1 className="text-2xl font-bold mt-3 gradient-text">AI Lover</h1>
         </div>
         <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8">
