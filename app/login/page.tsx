@@ -80,6 +80,9 @@ export default function LoginPage() {
             </button>
           </div>
         </div>
+        <p className="mt-6 text-center text-xs text-white/45">
+          登録すると<a href="/terms" className="underline hover:text-white/70">利用規約</a>・<a href="/privacy" className="underline hover:text-white/70">プライバシーポリシー</a>に同意したものとみなされます。本サービスは18歳以上対象です。
+        </p>
       </div>
     </main>
   )
