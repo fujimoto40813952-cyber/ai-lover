@@ -23,7 +23,7 @@ export default function TokushohoPage() {
       </p>
       <div className="mt-4">
         <Row label="販売事業者">AI Lover 事務局</Row>
-        <Row label="運営統括責任者">【要記入：氏名】</Row>
+        <Row label="運営統括責任者">藤本 直樹</Row>
         <Row label="所在地">東京都八王子市（詳細な住所はご請求があった場合に遅滞なく開示します）</Row>
         <Row label="電話番号">ご請求があった場合に遅滞なく開示します</Row>
         <Row label="お問い合わせ">LINE公式アカウント（【要記入：LINE URL】）にて受付。ドメイン取得後にメール窓口も開設予定。</Row>
