@@ -55,7 +55,7 @@ export default function PrivacyPage() {
       <p>本ポリシーは、必要に応じて改定されることがあります。重要な変更がある場合は本サービス上で告知します。</p>
 
       <h2 className="text-xl font-semibold text-white">10. お問い合わせ窓口</h2>
-      <p>個人情報の取扱いに関するお問い合わせは、LINE公式アカウント（【要記入：LINE URL】）にて受け付けています。</p>
+      <p>個人情報の取扱いに関するお問い合わせは、LINE公式アカウント（@383lgjsi）にて受け付けています。</p>
     </LegalShell>
   )
 }
