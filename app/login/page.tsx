@@ -21,12 +21,17 @@ export default function LoginPage() {
     setMessage('')
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email, password,
           options: { emailRedirectTo: `${location.origin}/auth/callback` },
         })
         if (error) throw error
-        setMessage('確認メールを送信しました。メールをご確認ください。')
+        // メール確認オフのときは登録と同時にセッションが発行される → そのまま選択画面へ
+        if (data.session) {
+          window.location.href = '/select'
+        } else {
+          setMessage('確認メールを送信しました。メールをご確認ください。')
+        }
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password })
         if (error) throw error
