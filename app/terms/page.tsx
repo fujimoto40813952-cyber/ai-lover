@@ -49,7 +49,7 @@ export default function TermsPage() {
       <p>本規約は日本法に準拠します。本サービスに関して紛争が生じた場合、東京地方裁判所立川支部を第一審の専属的合意管轄裁判所とします。</p>
 
       <h2 className="text-xl font-semibold text-white">第12条（お問い合わせ）</h2>
-      <p>本規約に関するお問い合わせは、LINE公式アカウント（【要記入：LINE URL】）にて受け付けています。</p>
+      <p>本規約に関するお問い合わせは、LINE公式アカウント（@383lgjsi）にて受け付けています。</p>
     </LegalShell>
   )
 }
