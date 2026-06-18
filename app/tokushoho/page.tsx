@@ -26,7 +26,7 @@ export default function TokushohoPage() {
         <Row label="運営統括責任者">藤本 直樹</Row>
         <Row label="所在地">東京都八王子市（詳細な住所はご請求があった場合に遅滞なく開示します）</Row>
         <Row label="電話番号">ご請求があった場合に遅滞なく開示します</Row>
-        <Row label="お問い合わせ">LINE公式アカウント（【要記入：LINE URL】）にて受付。ドメイン取得後にメール窓口も開設予定。</Row>
+        <Row label="お問い合わせ">LINE公式アカウント（@383lgjsi）にて受付。ドメイン取得後にメール窓口も開設予定。</Row>
         <Row label="販売価格">各有料サービスの申込画面に表示する価格（消費税込）。</Row>
         <Row label="商品代金以外の必要料金">インターネット接続に必要な通信料等はお客様のご負担となります。</Row>
         <Row label="支払方法">クレジットカード決済（Stripe）等、申込画面に表示する方法。</Row>
