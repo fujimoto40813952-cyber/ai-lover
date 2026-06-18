@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 // 【要記入：LINE公式アカウントのURL】取得後にここを差し替える
-const LINE_URL = '#'
+const LINE_URL = 'https://line.me/R/ti/p/@383lgjsi'
 
 /**
  * 公開用フッター。規約類・年齢注記・問い合わせ（LINE）への導線。
