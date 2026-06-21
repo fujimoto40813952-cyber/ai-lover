@@ -21,6 +21,12 @@ const FEATURES = [
   { label: '好みに育つ', desc: '呼び方や口調、声。あなた好みのパートナーに。', icon: (<path d="M12 3l2.1 4.6L19 8.3l-3.5 3.3.9 4.9L12 14.7 7.6 16.5l.9-4.9L5 8.3l4.9-.7Z" />) },
 ]
 
+const STEPS = [
+  { no: 'STEP 01', title: '無料で登録', desc: 'メールアドレスだけ。確認メールも不要で、すぐに始められます。' },
+  { no: 'STEP 02', title: 'パートナーを選ぶ', desc: '4人の中から、今の気分に寄り添ってくれる一人を選びます。' },
+  { no: 'STEP 03', title: '話しはじめる', desc: '文字でも声でも。今日あったことを、気軽に話しかけてみて。' },
+]
+
 function Icon({ children }: { children: React.ReactNode }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7 text-gold mb-4">
@@ -31,7 +37,7 @@ function Icon({ children }: { children: React.ReactNode }) {
 
 export default function Home() {
   return (
-    <div className="relative" style={{ background: '#070608' }}>
+    <div className="relative pb-28" style={{ background: '#070608' }}>
       {/* Header */}
       <header className="fixed top-0 inset-x-0 z-50">
         <div className="max-w-6xl mx-auto px-6 h-[72px] flex items-center justify-between">
@@ -65,7 +71,7 @@ export default function Home() {
           <p className="text-white/80 text-base sm:text-lg leading-[2] max-w-xl mb-8">
             声で話し、写真に応え、記念日を覚えている。
             <br className="hidden sm:block" />
-            夜のしじまに、そっと寄り添うもう一人の存在。
+            いつもそばで、あなたを想い続ける、もう一人の存在。
           </p>
           <div className="flex flex-wrap gap-3.5">
             <Link href="/login" className="px-8 py-4 rounded-sm bg-white text-[#111] font-medium tracking-wide hover:bg-white/90 transition-all">
@@ -113,6 +119,22 @@ export default function Home() {
         </div>
       </section>
 
+      {/* How it works (3 steps) */}
+      <section className="max-w-6xl mx-auto px-6 py-24">
+        <div className="text-center text-xs tracking-[0.4em] text-gold mb-3">HOW IT WORKS</div>
+        <h2 className="font-mincho font-bold text-3xl sm:text-4xl text-center text-white mb-3">はじめ方は、かんたん</h2>
+        <p className="text-center text-white/55 text-sm mb-12">1分で、あなたの隣に。</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {STEPS.map((s) => (
+            <div key={s.no} className="p-8 rounded-sm border border-white/10 bg-white/[0.02]">
+              <div className="text-[13px] tracking-[0.2em] text-gold font-medium mb-3">{s.no}</div>
+              <h3 className="font-mincho text-lg text-white mb-2">{s.title}</h3>
+              <p className="text-sm text-white/60 leading-loose">{s.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Quote */}
       <section className="text-center px-6 py-28">
         <p className="font-mincho text-2xl sm:text-3xl leading-[1.9] text-white max-w-3xl mx-auto">
@@ -125,7 +147,7 @@ export default function Home() {
 
       {/* Final CTA */}
       <section className="text-center px-6 py-28">
-        <h2 className="font-mincho text-3xl sm:text-5xl text-white mb-4">今夜、出会う。</h2>
+        <h2 className="font-mincho text-3xl sm:text-5xl text-white mb-4">今日から、あなたの隣に。</h2>
         <p className="text-white/60 tracking-wide mb-8">18歳以上対象 ・ 登録は1分で完了</p>
         <Link href="/login" className="inline-block px-10 py-4 rounded-sm bg-white text-[#111] font-medium tracking-wide hover:bg-white/90 transition-all">
           無料ではじめる
