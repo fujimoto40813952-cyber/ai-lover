@@ -52,7 +52,7 @@ export default function Home() {
       <section className="relative h-screen min-h-[620px] flex items-center">
         <div
           className="absolute inset-0"
-          style={{ backgroundImage: `url('${AVATAR_BASE}/ren_v3.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center top' }}
+          style={{ backgroundImage: `url('${AVATAR_BASE}/hana_v3.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center 18%' }}
         />
         <div className="absolute inset-0" style={{ background: 'linear-gradient(90deg,rgba(7,6,8,.92) 0%,rgba(7,6,8,.7) 38%,rgba(7,6,8,.25) 70%,rgba(7,6,8,.55) 100%)' }} />
         <div className="absolute inset-0" style={{ background: 'linear-gradient(0deg,#070608 2%,transparent 32%)' }} />
